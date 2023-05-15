@@ -76,6 +76,14 @@ To run the project, navigate to the project directory and run the following comm
 
 This will start the Spring Boot application and you can access it by navigating to [http://localhost:8080](http://localhost:8080) in your web browser.
 
+### Run unit tests
+
+To run unit test, navigate to the project directory and run the following command:
+
+```sh
+./gradlew test
+```
+
 ### Access the API documentation
 
 To access the API documentation, you can navigate to [/docs/swagger.yml](/docs/swagger.yml) in the project folder. However, please note that the Swagger UI may not display the documentation properly when accessed locally. As an alternative, we recommend using an online Swagger editor to view the API documentation in a more user-friendly manner
