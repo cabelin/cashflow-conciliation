@@ -1,0 +1,28 @@
+@host=http://localhost:8080
+
+###
+
+GET {{host}}/transactions
+
+###
+
+POST {{host}}/transactions
+Content-Type: application/json
+
+{
+  "description": "Stock replenishment 4",
+  "installmentsCount": 1,
+  "installmentsType": "MONTH",
+  "amount": 830.20,
+  "type": "OUT",
+  "category": "INVENTORY_COSTS",
+  "expectedPaymentDate": "2023-05-14",
+  "paymentDate": "2023-05-15"
+}
+
+###
+
+@date=2023-05-15
+
+GET {{host}}/transactions/reports
+?type=DAY&date={{date}}

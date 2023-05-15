@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: cashflow
+      MYSQL_USER: guest
+      MYSQL_PASSWORD: guest
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql

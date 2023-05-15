@@ -1,0 +1,290 @@
+openapi: 3.0.3
+info:
+  title: cashflow-query
+  description: This is a api documentation for cashflow-query microservice
+  version: 1.0.0
+tags:
+  - name: Transactions
+    description: Everything about your Transactions
+paths:
+  /transactions:
+    post:
+      tags:
+        - Transactions
+      summary: Create a new transaction
+      description: Create a new transaction with installment option
+      operationId: createTransaction
+      requestBody:
+        description: Create a new transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCreateRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponseDto'
+                example:
+                  - id: 61
+                    relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+                    description: "Stock replenishment"
+                    installment: 1
+                    amount: -415.23
+                    currency: "BRL"
+                    type: "OUT"
+                    category: "INVENTORY_COSTS"
+                    expectedPaymentDate: "2023-05-15"
+                    paymentDate: "2023-05-15"
+                    status: "PAID"
+                  - id: 62
+                    relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+                    description: "Stock replenishment"
+                    installment: 2
+                    amount: -415.24
+                    currency: "BRL"
+                    type: "OUT"
+                    category: "INVENTORY_COSTS"
+                    expectedPaymentDate: "2023-05-15"
+                    paymentDate: null
+                    status: "PENDING"
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+        - Transactions
+      summary: Get all transactions paginated
+      description: Get all transactions paginated
+      operationId: getAllTransactions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponsePageDto'
+              example:
+                content:
+                  - id: 61
+                    relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+                    description: "Stock replenishment"
+                    installment: 1
+                    amount: -415.23
+                    currency: "BRL"
+                    type: "OUT"
+                    category: "INVENTORY_COSTS"
+                    expectedPaymentDate: "2023-05-15"
+                    paymentDate: "2023-05-15"
+                    status: "PAID"
+                  - id: 62
+                    relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+                    description: "Stock replenishment"
+                    installment: 2
+                    amount: -415.24
+                    currency: "BRL"
+                    type: "OUT"
+                    category: "INVENTORY_COSTS"
+                    expectedPaymentDate: "2023-05-15"
+                    paymentDate: null
+                    status: "PENDING"
+                first: true
+                last: true
+                totalPages: 1
+                totalElements: 2
+                size: 10
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /transactions/reports:
+    get:
+      tags:
+        - Transactions
+      summary: Get transaction reports
+      description: Get transaction reports
+      operationId: getTransactionReports
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [DAY]
+          required: true
+          description: The type of the report to generate
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: true
+          description: The date for which to generate the report
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionReportResponseDto'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    TransactionCreateRequestDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The transaction description
+          example: "Stock replenishment"
+        installmentsCount:
+          type: integer
+          description: The number of installments
+          example: 2
+        installmentsType:
+          type: string
+          enum: [DAY, MONTH]
+          description: The type of installments
+          example: MONTH
+        amount:
+          type: number
+          description: The transaction amount, the value is automatically calculated according to the number of installments
+          example: 830.47
+        type:
+          type: string
+          enum: [IN, OUT]
+          description: The transaction type
+          example: OUT
+        category:
+          type: string
+          enum: [SALES, UTILITIES, EMPLOYEE_SALARIES, INVENTORY_COSTS, MARKETING_EXPENSES, OTHER]
+          description: The transaction category
+          example: INVENTORY_COSTS
+        expectedPaymentDate:
+          type: string
+          format: date
+          description: The expected payment date
+          example: "2023-05-15"
+        paymentDate:
+          type: string
+          format: date
+          description: The paid date
+          example: "2023-05-15"
+    TransactionResponsePageDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionResponseDto'
+        totalPages:
+          type: number
+        totalElements:
+          type: number
+        size:
+          type: number
+        first:
+          type: boolean
+        last:
+          type: boolean
+    TransactionResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The transaction ID.
+        relatedTransactionId:
+          type: string
+          format: uuid
+          description: The related transaction ID.
+        description:
+          type: string
+          description: The description of the transaction.
+        installment:
+          type: integer
+          description: The installment number of the transaction.
+        amount:
+          type: number
+          description: The amount of the transaction.
+        currency:
+          type: string
+          enum: [BRL]
+          description: The currency code of the transaction.
+        type:
+          type: string
+          enum: [IN, OUT]
+          description: The type of the transaction (IN or OUT).
+        category:
+          type: string
+          enum: [SALES, UTILITIES, EMPLOYEE_SALARIES, INVENTORY_COSTS, MARKETING_EXPENSES, OTHER]
+          description: The category of the transaction.
+        expectedPaymentDate:
+          type: string
+          format: date
+          description: The expected payment date of the transaction in format YYYY-MM-dd.
+        paymentDate:
+          type: string
+          format: date
+          description: The payment date of the transaction in format YYYY-MM-dd.
+        status:
+          type: string
+          enum: [PAID, PENDING]
+          description: The status of the transaction.
+    TransactionUpdatePaymentDateRequestDto:
+      type: object
+      properties:
+        paymentDate:
+          type: string
+          format: date
+          description: The payment date of the transaction in format YYYY-MM-dd.
+          example: "2023-05-15"
+    TransactionReportResponseDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: The balance amount of the day, include PAID and PENDING transactions.
+          example: 385.0
+        paidAmount:
+          type: number
+          description: The balance paid amount of the day, include PAID transactions.
+          example: -415.23
+        pendingAmount:
+          type: number
+          description: The balance pending amount of the day, include PENDING transactions.
+          example: 800.23
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransactionResponseDto"
+          example:
+          - id: 61
+            relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+            description: "Stock replenishment"
+            installment: 1
+            amount: 800.23
+            currency: "BRL"
+            type: "IN"
+            category: "INVENTORY_COSTS"
+            expectedPaymentDate: "2023-05-15"
+            paymentDate: null
+            status: "PENDING"
+          - id: 61
+            relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+            description: "Stock replenishment"
+            installment: 1
+            amount: -415.23
+            currency: "BRL"
+            type: "OUT"
+            category: "INVENTORY_COSTS"
+            expectedPaymentDate: "2023-05-15"
+            paymentDate: "2023-05-15"
+            status: "PAID"
