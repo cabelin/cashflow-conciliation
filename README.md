@@ -51,8 +51,8 @@ docker-compose up -d
 3. Create a new user and grant it access to the database by running the following command:
 
    ```mysql
-   CREATE USER 'guest'@'%' IDENTIFIED BY 'guest';
-   GRANT ALL PRIVILEGES ON cashflow.* TO 'guest'@'%';
+   CREATE USER 'guest' IDENTIFIED BY 'guest';
+   GRANT ALL PRIVILEGES ON cashflow.* TO 'guest';
    FLUSH PRIVILEGES;
    ```
 
