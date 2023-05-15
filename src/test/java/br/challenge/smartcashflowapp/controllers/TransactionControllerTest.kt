@@ -4,6 +4,7 @@ import br.challenge.smartcashflowapp.configs.ObjectMapperConfig
 import br.challenge.smartcashflowapp.controllers.exception.GlobalExceptionHandler
 import br.challenge.smartcashflowapp.dtos.TransactionCreateRequestDto
 import br.challenge.smartcashflowapp.dtos.TransactionDto
+import br.challenge.smartcashflowapp.dtos.UpdatePaymentDateRequestDto
 import br.challenge.smartcashflowapp.dtos.constants.*
 import br.challenge.smartcashflowapp.entities.TransactionEntity
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -114,6 +116,26 @@ class TransactionControllerTest {
         assertEquals("this is a required field", sortedErrors?.get(4)?.message)
         assertEquals("type", sortedErrors?.get(5)?.fieldName)
         assertEquals("this is a required field, the options are: IN, OUT", sortedErrors?.get(5)?.message)
+    }
+
+    @Test
+    fun `when update payment date is called then should no content success`() {
+        // Given
+        val transactionId = 2
+
+        // When
+        mockMvc.perform(
+            put("/transactions/$transactionId/paymentDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "paymentDate": "2023-05-15"
+                    }
+                """.trimIndent())
+                .accept(MediaType.APPLICATION_JSON))
+
+                // Then
+            .andExpect(status().isNoContent)
     }
 
     private fun createInvalidTransactionCreateRequestDto() = TransactionCreateRequestDto(

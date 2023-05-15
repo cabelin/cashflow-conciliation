@@ -4,10 +4,12 @@ import br.challenge.smartcashflowapp.converters.TransactionConverter
 import br.challenge.smartcashflowapp.dtos.TransactionCreateRequestDto
 import br.challenge.smartcashflowapp.dtos.TransactionDto
 import br.challenge.smartcashflowapp.dtos.TransactionReportResponseDto
+import br.challenge.smartcashflowapp.dtos.UpdatePaymentDateRequestDto
 import br.challenge.smartcashflowapp.dtos.constants.TransactionCurrency
 import br.challenge.smartcashflowapp.dtos.constants.TransactionInstallmentType
 import br.challenge.smartcashflowapp.dtos.constants.TransactionReportType
 import br.challenge.smartcashflowapp.dtos.constants.TransactionStatus
+import br.challenge.smartcashflowapp.dtos.exceptions.BadRequestException
 import br.challenge.smartcashflowapp.entities.TransactionEntity
 import br.challenge.smartcashflowapp.repositories.TransactionRepository
 import org.springframework.data.domain.Page
@@ -19,7 +21,7 @@ import java.time.LocalDate
 import java.util.*
 
 @Service
-class TransactionService(private val transactionRepository: TransactionRepository, private val transactionConverter: TransactionConverter) {
+data class TransactionService(private val transactionRepository: TransactionRepository, private val transactionConverter: TransactionConverter) {
     fun createTransaction(dto: TransactionCreateRequestDto): List<TransactionDto> {
         val entities = createTransactionInstallments(dto)
         return transactionRepository.saveAll(entities).map { transactionConverter.toDto(it) }
@@ -34,6 +36,23 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             return dayReport(date)
         }
         throw IllegalArgumentException("Does not exists report for this type $type")
+    }
+
+    fun updatePaymentDate(id: Long, updatePaymentDateRequestDto: UpdatePaymentDateRequestDto) {
+        val transactionEntityOpt = transactionRepository.findById(id)
+        if (transactionEntityOpt.isPresent) {
+            val transactionEntity = transactionEntityOpt.get()
+
+            if (transactionEntity.paymentDate != null) {
+                throw BadRequestException("You have already marked the transaction as PAID")
+            }
+
+            transactionRepository.save(
+                transactionEntity.copy(
+                    paymentDate = updatePaymentDateRequestDto.paymentDate
+                )
+            )
+        }
     }
 
     private fun createTransactionInstallments(dto: TransactionCreateRequestDto): List<TransactionEntity> {

@@ -103,6 +103,43 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+  /transactions/{id}/paymentDate:
+    put:
+      tags:
+        - Transactions
+      summary: Update transaction payment date
+      description: Update transaction payment date
+      operationId: updateTransactionPaymentDate
+      requestBody:
+        description: Update transaction payment date
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionUpdatePaymentDateRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponseDto'
+              example:
+                id: 61
+                relatedTransactionId: "cac0a627-075b-4066-b7ad-76c278f442ee"
+                description: "Stock replenishment"
+                installment: 1
+                amount: -415.23
+                currency: "BRL"
+                type: "OUT"
+                category: "INVENTORY_COSTS"
+                expectedPaymentDate: "2023-05-14"
+                paymentDate: "2023-05-15"
+                status: "PAID"
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
   /transactions/reports:
     get:
       tags:

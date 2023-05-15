@@ -1,5 +1,6 @@
 package br.challenge.smartcashflowapp.controllers.exception
 
+import br.challenge.smartcashflowapp.dtos.exceptions.BadRequestException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import org.springframework.http.HttpStatus
 import org.springframework.validation.FieldError
@@ -32,6 +33,12 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleValidationException(ex: InvalidFormatException): ErrorResponse {
         return ErrorResponse("Validation failed", listOf(ErrorDetail("Invalid Format Exception", ex.message)))
+    }
+
+    @ExceptionHandler(BadRequestException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleValidationException(ex: BadRequestException): ErrorResponse {
+        return ErrorResponse("Validation failed", listOf(ErrorDetail("Bad request", ex.message)))
     }
 
     data class ErrorResponse(val message: String, val errors: List<ErrorDetail>?)

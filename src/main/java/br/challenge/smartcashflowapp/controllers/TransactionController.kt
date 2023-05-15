@@ -3,6 +3,7 @@ package br.challenge.smartcashflowapp.controllers
 import br.challenge.smartcashflowapp.dtos.TransactionCreateRequestDto
 import br.challenge.smartcashflowapp.dtos.TransactionDto
 import br.challenge.smartcashflowapp.dtos.TransactionReportResponseDto
+import br.challenge.smartcashflowapp.dtos.UpdatePaymentDateRequestDto
 import br.challenge.smartcashflowapp.dtos.constants.TransactionReportType
 import br.challenge.smartcashflowapp.services.TransactionService
 import org.springframework.data.domain.Page
@@ -39,5 +40,17 @@ class TransactionController(private val transactionService: TransactionService) 
         return ResponseEntity.ok(
             transactionService.report(type, date)
         )
+    }
+
+    @PutMapping("/{id}/paymentDate")
+    fun updatePaymentDate(
+        @PathVariable(value = "id")
+        id: Long,
+
+        @RequestBody @Valid
+        updatePaymentDateRequestDto: UpdatePaymentDateRequestDto
+    ): ResponseEntity<Unit> {
+        transactionService.updatePaymentDate(id, updatePaymentDateRequestDto);
+        return ResponseEntity.noContent().build()
     }
 }

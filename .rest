@@ -22,7 +22,19 @@ Content-Type: application/json
 
 ###
 
-@date=2023-05-15
+@date=2023-06-15
 
 GET {{host}}/transactions/reports
 ?type=DAY&date={{date}}
+
+###
+
+@date=2023-05-15
+@id=64
+
+PUT {{host}}/transactions/{{id}}/paymentDate
+Content-Type: application/json
+
+{
+    "paymentDate": "2023-06-15"
+}

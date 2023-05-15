@@ -4,7 +4,9 @@ import br.challenge.smartcashflowapp.converters.TransactionConverter
 import br.challenge.smartcashflowapp.dtos.TransactionCreateRequestDto
 import br.challenge.smartcashflowapp.dtos.TransactionDto
 import br.challenge.smartcashflowapp.dtos.TransactionReportResponseDto
+import br.challenge.smartcashflowapp.dtos.UpdatePaymentDateRequestDto
 import br.challenge.smartcashflowapp.dtos.constants.*
+import br.challenge.smartcashflowapp.dtos.exceptions.BadRequestException
 import br.challenge.smartcashflowapp.entities.TransactionEntity
 import br.challenge.smartcashflowapp.repositories.TransactionRepository
 import br.challenge.smartcashflowapp.utils.AssertionTestUtils.Companion.assertBigDecimal
@@ -135,9 +137,11 @@ class TransactionServiceTest {
 
     @Test
     fun `unknown report type throws exception`() {
+        // Given
         val date = LocalDate.of(2022, 5, 15)
         val unknownType = TransactionReportType.MONTH
 
+        // When... Then
         assertThrows(IllegalArgumentException::class.java) {
             transactionService.report(unknownType, date)
         }
@@ -238,5 +242,52 @@ class TransactionServiceTest {
 
         // Then
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun `update PAID transaction throws exception`() {
+        // Given
+        val id = 2L
+
+        Mockito.`when`(transactionRepository.findById(2)).thenReturn(
+            Optional.of(TransactionEntity().copy(
+                id = id,
+                paymentDate = LocalDate.now()
+            ))
+        )
+
+        // When... Then
+        assertThrows(BadRequestException::class.java) {
+            transactionService.updatePaymentDate(id, UpdatePaymentDateRequestDto(
+                paymentDate = LocalDate.parse("2023-05-15")
+            ))
+        }
+    }
+
+    @Test
+    fun `update PENDING transaction should be success`() {
+        // Given
+        val id = 2L
+
+        Mockito.`when`(transactionRepository.findById(2)).thenReturn(
+            Optional.of(TransactionEntity().copy(
+                id = id,
+                paymentDate = null
+            ))
+        )
+
+        val transactionToSaveArgumentCaptor = ArgumentCaptor.forClass(TransactionEntity::class.java)
+
+        // When... Then
+        transactionService.updatePaymentDate(id, UpdatePaymentDateRequestDto(
+            paymentDate = LocalDate.parse("2023-05-15")
+        ))
+
+        Mockito.verify(transactionRepository).save(transactionToSaveArgumentCaptor.capture())
+
+        val transactionSaved = transactionToSaveArgumentCaptor.value
+        assertThat(transactionSaved).isNotNull
+        assertThat(transactionSaved.id).isEqualTo(2L)
+        assertThat(transactionSaved.paymentDate).isEqualTo(LocalDate.parse("2023-05-15"))
     }
 }
