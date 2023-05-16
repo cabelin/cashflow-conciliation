@@ -24,7 +24,7 @@ Before getting started, make sure you have the following installed:
 To clone the repository, run the following command:
 
 ```sh
-git clone https://github.com/your-username/smart-cash-flow.git
+git clone https://github.com/cabelin/cashflow-conciliation.git
 ```
 
 ### Start the containers
