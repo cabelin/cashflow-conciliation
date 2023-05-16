@@ -39,8 +39,8 @@ class TransactionControllerTest {
             category = TransactionCategory.INVENTORY_COSTS,
             type = TransactionType.OUT,
             installmentsType = TransactionInstallmentType.MONTH,
-            expectedPaymentDate = LocalDate.now(),
-            paymentDate = LocalDate.now()
+            expectedPaymentDate = LocalDate.parse("2023-05-15"),
+            paymentDate = LocalDate.parse("2023-05-15")
         )
         val transactionDto = TransactionDto(
             id = 1,
