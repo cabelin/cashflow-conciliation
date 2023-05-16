@@ -34,30 +34,6 @@ To start the containers, navigate to the project directory and run the following
 docker-compose up -d
 ```
 
-### Set up the MySQL Database
-
-1. Connect to the MySQL server by running the following command:
-
-   ```sh
-   mysql -u root -p
-   ```
-
-2. Create a new database for the project by running the following command:
-
-   ```mysql
-   CREATE DATABASE cashflow;
-   ```
-
-3. Create a new user and grant it access to the database by running the following command:
-
-   ```mysql
-   CREATE USER 'guest' IDENTIFIED BY 'guest';
-   GRANT ALL PRIVILEGES ON cashflow.* TO 'guest';
-   FLUSH PRIVILEGES;
-   ```
-
-   Replace 'password' with a secure password.
-
 ### Build the project
 
 To build the project, navigate to the project directory and run the following command:
